@@ -1,0 +1,11 @@
+{
+  "name": "명현반응(호전반응) Q&A",
+  "short_name": "SOD Q&A",
+  "description": "등록된 체험담 및 상담 자료 검색",
+  "lang": "ko",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f8f7",
+  "theme_color": "#0b5c55",
+  "icons": [{ "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

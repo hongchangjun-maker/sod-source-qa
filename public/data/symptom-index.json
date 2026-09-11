@@ -1,0 +1,72 @@
+[
+  {
+    "symptom": "가벼운 피로·졸림",
+    "originalInterpretation": "흔한 호전반응 체험으로 언급",
+    "classification": "경과 관찰 사례"
+  },
+  {
+    "symptom": "일시적 몸살·근육통",
+    "originalInterpretation": "과거 불편 부위가 다시 반응한다고 해석",
+    "classification": "체험담 중심"
+  },
+  {
+    "symptom": "가벼운 소화불편·울렁거림",
+    "originalInterpretation": "위장이 약하거나 초기 반응으로 해석",
+    "classification": "섭취상황 확인"
+  },
+  {
+    "symptom": "발진·가려움",
+    "originalInterpretation": "명현으로 보는 체험과 알레르기 가능성 의견 공존",
+    "classification": "지속·악화 시 구분 필요"
+  },
+  {
+    "symptom": "변비·설사",
+    "originalInterpretation": "호전반응으로 묻는 사례 다수",
+    "classification": "지속·심한 경우 다른 원인 확인"
+  },
+  {
+    "symptom": "어지럼·두통",
+    "originalInterpretation": "명현 해석과 전해질·기존질환 확인 의견 공존",
+    "classification": "심하면 확인 필요"
+  },
+  {
+    "symptom": "시야 저하·눈 통증",
+    "originalInterpretation": "일부 일시적 체험",
+    "classification": "안과적 원인 구분 필요"
+  },
+  {
+    "symptom": "심한 부종",
+    "originalInterpretation": "일부 명현 질문",
+    "classification": "기저질환 확인 우선"
+  },
+  {
+    "symptom": "흉통·가슴조임·호흡곤란",
+    "originalInterpretation": "명현 질문 있음",
+    "classification": "단순 호전반응으로 단정하지 않음"
+  },
+  {
+    "symptom": "고열·반복 오한",
+    "originalInterpretation": "체험담에는 존재",
+    "classification": "지속 시 다른 원인 확인"
+  },
+  {
+    "symptom": "염증수치 상승",
+    "originalInterpretation": "일부 질문",
+    "classification": "호전반응으로 보기 근거 약하다는 답변 존재"
+  },
+  {
+    "symptom": "증상 중단 후 수개월 지속",
+    "originalInterpretation": "호전반응으로 설명하기 어렵다는 답변",
+    "classification": "의료적 원인 확인"
+  },
+  {
+    "symptom": "과거 통증 부위 재발",
+    "originalInterpretation": "체험자들이 자주 호전반응으로 해석",
+    "classification": "체험담으로만 기록"
+  },
+  {
+    "symptom": "여러 달·1년 뒤 새 증상",
+    "originalInterpretation": "늦은 호전반응이라는 체험 존재",
+    "classification": "새로운 질환 가능성도 함께 고려"
+  }
+]
