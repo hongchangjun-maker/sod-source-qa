@@ -36,7 +36,7 @@ export default function App() {
       fetch(`${import.meta.env.BASE_URL}data/qa.json`).then((response) => { if (!response.ok) throw new Error('qa'); return response.json() as Promise<QAData> }),
       fetch(`${import.meta.env.BASE_URL}data/symptom-index.json`).then((response) => { if (!response.ok) throw new Error('index'); return response.json() as Promise<SymptomIndexItem[]> }),
     ]).then(([qa, index]) => {
-      if (qa.metadata.answerPolicy !== 'source-only' || qa.items.length !== 77) throw new Error('invalid')
+      if (qa.metadata.answerPolicy !== 'source-only' || qa.metadata.originalItemCount !== 77 || qa.items.length !== qa.metadata.totalItems || qa.items.length < qa.metadata.originalItemCount) throw new Error('invalid')
       setData(qa); setSymptomIndex(index)
     }).catch(() => setLoadError(true))
   }, [])

@@ -44,13 +44,13 @@ npm run preview
 }
 ```
 
-새 Q&A를 추가할 때는 고유한 `id`, `part`, `category`, `question`, 원문 그대로의 `answer`, 검색용 `keywords`를 추가하고 `metadata.totalItems`를 실제 개수와 맞춥니다. 현재 편집 원본을 다시 변환하려면 다음 명령을 사용할 수 있습니다.
+새 Q&A를 추가할 때는 고유한 `id`, `part`, `category`, `question`, 원문 그대로의 `answer`, 검색용 `keywords`를 추가하고 `metadata.totalItems`를 실제 개수와 맞춥니다. 카테고리, 전체 질문, 자동완성과 검색 대상은 JSON에서 자동 생성되므로 앱 코드는 바꿀 필요가 없습니다. 현재 편집 원본을 다시 변환하려면 다음 명령을 사용할 수 있습니다.
 
 ```bash
 node scripts/build-data.mjs "원본-TXT-절대경로"
 ```
 
-변환 후에는 반드시 `npm run validate:data`와 `npm test`를 실행합니다. 현재 77개 고정 검증은 이번 원본 계약을 보호하기 위한 것이므로, 공식 원본에 문항이 추가될 때만 검증 기준도 함께 갱신합니다.
+변환 후에는 반드시 `npm run validate:data`와 `npm test`를 실행합니다. `originalItemCount: 77`은 이번 원본이 빠지지 않았는지 지키는 기준이며, 이후 항목은 `totalItems`만 실제 개수에 맞추어 추가할 수 있습니다.
 
 ## 검색 방식
 

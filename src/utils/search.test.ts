@@ -8,10 +8,12 @@ const qa = JSON.parse(fs.readFileSync('public/data/qa.json', 'utf8')) as QAData
 describe('closed source-only search', () => {
   it('keeps the immutable data contract', () => {
     expect(qa.metadata.answerPolicy).toBe('source-only')
-    expect(qa.items).toHaveLength(77)
-    expect(qa.items.filter((item) => item.part === '1부')).toHaveLength(45)
-    expect(qa.items.filter((item) => item.part === '2부')).toHaveLength(32)
-    expect(new Set(qa.items.map((item) => item.id)).size).toBe(77)
+    expect(qa.metadata.originalItemCount).toBe(77)
+    expect(qa.metadata.totalItems).toBe(qa.items.length)
+    expect(qa.items.length).toBeGreaterThanOrEqual(77)
+    expect(qa.items.filter((item) => item.part === '1부').length).toBeGreaterThanOrEqual(45)
+    expect(qa.items.filter((item) => item.part === '2부').length).toBeGreaterThanOrEqual(32)
+    expect(new Set(qa.items.map((item) => item.id)).size).toBe(qa.items.length)
     expect(qa.items.every((item) => item.question.length > 0 && item.answer.length > 0)).toBe(true)
   })
 

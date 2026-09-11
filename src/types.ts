@@ -13,6 +13,7 @@ export interface QAData {
     title: string
     version: string
     totalItems: number
+    originalItemCount: number
     source: string
     answerPolicy: 'source-only'
     sourceNotice: string

@@ -82,6 +82,7 @@ const qa = {
     title: 'SOD 명현반응(호전반응) 체험사례 및 반응·대응 Q&A',
     version: '1.0',
     totalItems: items.length,
+    originalItemCount: 77,
     source: path.basename(sourcePath),
     answerPolicy: 'source-only',
     sourceNotice,
