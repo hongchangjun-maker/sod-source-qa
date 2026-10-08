@@ -71,7 +71,7 @@ const items = messages.map((message, index) => {
 const counts = Object.fromEntries(['symptom-question', 'reaction', 'answer', 'context'].map((kind) => [kind, items.filter((item) => item.kind === kind).length]))
 const output = {
   metadata: {
-    title: '리쏘드 AI상담·후기 단체대화 원문',
+    title: '리쏘드 상담·후기 단체대화 원문',
     source: 'KakaoTalk_20261009_0755_55_963_group.txt',
     sourceSha256: crypto.createHash('sha256').update(sourceBuffer).digest('hex'),
     exportedAt: '2026-10-09',

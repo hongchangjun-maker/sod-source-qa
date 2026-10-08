@@ -81,28 +81,6 @@ export default function App() {
   const filteredConversations = conversations?.items.filter((item) => conversationFilter === 'all' || item.kind === conversationFilter) ?? []
   const visibleConversations = filteredConversations.slice(0, conversationPage * 20)
 
-  useEffect(() => {
-    if (!data || !document.modelContext?.registerTool) return
-    const lifecycle = new AbortController()
-    const currentData = data
-    void Promise.resolve(document.modelContext.registerTool({
-      name: 'search_registered_sod_qa',
-      title: '등록된 SOD Q&A 검색',
-      description: '사용자가 지정한 증상을 등록된 77개 원문 Q&A 안에서만 검색하고 동일한 결과를 화면에 표시합니다.',
-      inputSchema: { type: 'object', properties: { query: { type: 'string', minLength: 1 } }, required: ['query'], additionalProperties: false },
-      annotations: { readOnlyHint: false, untrustedContentHint: false },
-      async execute(input) {
-        const queryValue = typeof input === 'object' && input !== null && 'query' in input ? (input as { query?: unknown }).query : undefined
-        if (typeof queryValue !== 'string' || !queryValue.trim()) throw new Error('query must be a non-empty string')
-        const matched = searchQA(currentData.items, queryValue)
-        runSearch(queryValue)
-        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
-        return { query: queryValue, count: matched.length, ids: matched.map((result) => result.item.id), answerPolicy: 'source-only' }
-      },
-    }, { signal: lifecycle.signal })).catch(() => undefined)
-    return () => lifecycle.abort()
-  }, [data])
-
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main">본문으로 바로가기</a>
@@ -124,7 +102,7 @@ export default function App() {
           <h1 id="page-title">명현반응<span>(호전반응)</span> Q&A</h1>
           <p><strong>불편한 증상을 한두 단어로 입력하세요.</strong><br />예: 가려움, 설사, 부종, 잠이 안 와요</p>
           <SearchBox value={query} suggestions={autoSuggestions} onChange={setQuery} onSearch={runSearch} />
-          <div className="privacy-note"><CircleAlert aria-hidden="true" /><span>입력 내용은 외부 서버로 전송하거나 저장하지 않습니다.</span></div>
+          <div className="privacy-note"><CircleAlert aria-hidden="true" /><span>무료 이용 · 회원가입 없음 · 입력 내용 외부 전송 없음</span></div>
           {recents.length > 0 && <div className="recent-row"><strong>최근 검색</strong><div>{recents.map((term) => <button type="button" key={term} onClick={() => runSearch(term)}>{term}</button>)}</div><button type="button" className="clear-recents" onClick={() => { setRecents([]); localStorage.removeItem(RECENTS_KEY) }}><Trash2 aria-hidden="true" />삭제</button></div>}
         </section>
 
@@ -138,7 +116,7 @@ export default function App() {
         {loadError && <section className="status-panel error"><h2>자료를 불러오지 못했습니다</h2><p>페이지를 새로고침한 뒤 다시 시도해 주세요.</p></section>}
         {!data && !loadError && <section className="status-panel" aria-live="polite"><div className="loader" /><p>등록 자료를 불러오는 중입니다.</p></section>}
 
-        {data && view === 'search' && results === null && <section className="quick-section"><div className="how-to"><h2>이렇게 이용하세요</h2><ol><li><strong>1</strong><span>불편한 증상을<br />입력하거나 말하기</span></li><li><strong>2</strong><span>관련된 원문<br />답변 확인하기</span></li><li><strong>3</strong><span>필요한 질문은<br />저장해 다시 보기</span></li></ol></div><div className="section-heading"><div><span>한 번 눌러 검색</span><h2>자주 찾는 증상</h2></div><p>찾는 증상이 보이면 바로 눌러보세요.</p></div><div className="quick-grid">{quickSymptoms.slice(0, showAllQuick ? quickSymptoms.length : initialQuickCount).map((term) => <button type="button" key={term} onClick={() => runSearch(term)}>{term}</button>)}</div><button type="button" className="more-symptoms" onClick={() => setShowAllQuick((value) => !value)}>{showAllQuick ? '증상 버튼 접기' : `다른 증상 ${quickSymptoms.length - initialQuickCount}개 더 보기`}</button>{savedItems.length > 0 && <div className="saved-section"><h2>저장한 질문 <span>{savedItems.length}</span></h2>{savedItems.map((item) => <AnswerCard key={item.id} item={item} saved onToggleSave={toggleSaved} />)}</div>}</section>}
+        {data && view === 'search' && results === null && <section className="quick-section"><div className="how-to"><h2>이렇게 이용하세요</h2><ol><li><strong>1</strong><span>불편한 증상을<br />한두 단어로 입력하기</span></li><li><strong>2</strong><span>관련된 원문<br />답변 확인하기</span></li><li><strong>3</strong><span>필요한 질문은<br />저장해 다시 보기</span></li></ol></div><div className="section-heading"><div><span>한 번 눌러 검색</span><h2>자주 찾는 증상</h2></div><p>찾는 증상이 보이면 바로 눌러보세요.</p></div><div className="quick-grid">{quickSymptoms.slice(0, showAllQuick ? quickSymptoms.length : initialQuickCount).map((term) => <button type="button" key={term} onClick={() => runSearch(term)}>{term}</button>)}</div><button type="button" className="more-symptoms" onClick={() => setShowAllQuick((value) => !value)}>{showAllQuick ? '증상 버튼 접기' : `다른 증상 ${quickSymptoms.length - initialQuickCount}개 더 보기`}</button>{savedItems.length > 0 && <div className="saved-section"><h2>저장한 질문 <span>{savedItems.length}</span></h2>{savedItems.map((item) => <AnswerCard key={item.id} item={item} saved onToggleSave={toggleSaved} />)}</div>}</section>}
 
         {data && view === 'search' && results !== null && <section className="results-section" ref={resultsRef} tabIndex={-1} aria-live="polite">
           {ambiguous ? <div className="empty-state"><h2>{AMBIGUOUS_MESSAGE}</h2><p>가장 가까운 항목을 선택해 주세요.</p><div className="broad-choices">{broadChoices.map((choice) => <button type="button" key={choice} onClick={() => runSearch(choice)}>{choice}</button>)}</div></div>

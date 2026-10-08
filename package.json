@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:data && npm run validate:data && tsc -b && vite build",
+    "build": "npm run build:data && npm run validate:data && npm run validate:no-ai && tsc -b && vite build",
     "build:data": "node scripts/build-conversation-data.mjs",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "npm run validate:no-ai && vitest run",
     "typecheck": "tsc -b --pretty false",
-    "validate:data": "node scripts/validate-data.mjs"
+    "validate:data": "node scripts/validate-data.mjs",
+    "validate:no-ai": "node scripts/validate-no-ai.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

@@ -54,15 +54,8 @@ h1 span { font-weight: 400; color: #cce8e1; }
 .search-input-wrap input::placeholder { color: #7c8e8b; }
 .icon-button { width: 44px; height: 44px; display: grid; place-items: center; flex: 0 0 44px; border: 0; border-radius: 10px; color: var(--brand); background: #e8f4f1; }
 .clear-button { color: #687c78; background: transparent; }
-.mic-button.listening { color: white; background: var(--coral); animation: pulse 1.4s infinite; }
-@keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(201,78,53,.18); } }
-.search-actions { display: flex; gap: .55rem; }
-.search-actions > button { min-width: 0; }
-.search-button, .voice-button { min-height: 64px; display: flex; align-items: center; justify-content: center; gap: .5rem; padding: 0 1.25rem; border: 0; border-radius: 13px; font-weight: 850; box-shadow: 0 13px 34px rgba(0,30,26,.2); white-space: nowrap; }
-.search-button { color: #17312e; background: #f5aa6d; }
+.search-button { min-height: 64px; display: flex; align-items: center; justify-content: center; gap: .5rem; padding: 0 1.45rem; border: 0; border-radius: 13px; color: #17312e; background: #f5aa6d; font-weight: 850; box-shadow: 0 13px 34px rgba(0,30,26,.2); white-space: nowrap; }
 .search-button:hover { background: #ffc18d; }
-.voice-button { color: var(--brand-dark); background: white; }
-.voice-button.listening { color: white; background: var(--coral); animation: pulse 1.4s infinite; }
 .suggestions { position: absolute; top: calc(100% + .45rem); left: 0; right: 0; z-index: 30; margin: 0; padding: .45rem; list-style: none; border: 1px solid var(--line); border-radius: 12px; background: white; box-shadow: 0 18px 38px rgba(10,50,45,.2); }
 .suggestions button { width: 100%; min-height: 48px; padding: .7rem .8rem; border: 0; border-radius: 8px; text-align: left; color: var(--ink); background: transparent; }
 .suggestions button:hover { background: #eaf5f1; }
@@ -185,8 +178,7 @@ footer { color: #e7f1ef; background: #123a35; }
   .search-form { grid-template-columns: 1fr; }
   .search-input-wrap, .search-button { min-height: 60px; }
   .search-input-wrap input { font-size: 1rem; }
-  .search-actions { display: grid; grid-template-columns: 1.25fr .9fr; }
-  .search-button, .voice-button { min-width: 0; min-height: 58px; padding: 0 .55rem; font-size: .9rem; }
+  .search-button { min-width: 0; min-height: 58px; padding: 0 .75rem; font-size: 1rem; }
   .privacy-note { align-items: flex-start; text-align: left; }
   .recent-row { justify-content: flex-start; text-align: left; }
   .view-nav, .quick-section, .content-section, .results-section, .status-panel { width: calc(100% - 1.5rem); }

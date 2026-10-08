@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Mic, Search, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 
 interface Props {
   value: string
@@ -8,16 +8,9 @@ interface Props {
   onSearch: (value: string) => void
 }
 
-interface SpeechRecognitionEventLike extends Event { results: { [index: number]: { [index: number]: { transcript: string } } } }
-interface SpeechRecognitionLike { lang: string; interimResults: boolean; start(): void; onresult: (event: SpeechRecognitionEventLike) => void; onend: () => void; onerror: () => void }
-type SpeechRecognitionCtor = new () => SpeechRecognitionLike
-
 export function SearchBox({ value, suggestions, onChange, onSearch }: Props) {
   const [open, setOpen] = useState(false)
-  const [listening, setListening] = useState(false)
   const wrapperRef = useRef<HTMLFormElement>(null)
-  const SpeechRecognition = (window as unknown as { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor }).SpeechRecognition
-    ?? (window as unknown as { webkitSpeechRecognition?: SpeechRecognitionCtor }).webkitSpeechRecognition
 
   useEffect(() => {
     const close = (event: MouseEvent) => { if (!wrapperRef.current?.contains(event.target as Node)) setOpen(false) }
@@ -29,18 +22,6 @@ export function SearchBox({ value, suggestions, onChange, onSearch }: Props) {
     event.preventDefault()
     setOpen(false)
     onSearch(value)
-  }
-
-  function listen() {
-    if (!SpeechRecognition) return
-    const recognition = new SpeechRecognition()
-    recognition.lang = 'ko-KR'
-    recognition.interimResults = false
-    recognition.onresult = (event) => { const text = event.results[0][0].transcript; onChange(text); onSearch(text) }
-    recognition.onend = () => setListening(false)
-    recognition.onerror = () => setListening(false)
-    setListening(true)
-    recognition.start()
   }
 
   return (
@@ -65,10 +46,7 @@ export function SearchBox({ value, suggestions, onChange, onSearch }: Props) {
           </ul>
         )}
       </div>
-      <div className="search-actions">
-        <button className="search-button" type="submit"><Search aria-hidden="true" />답변 찾기</button>
-        {SpeechRecognition && <button type="button" className={`voice-button ${listening ? 'listening' : ''}`} aria-label={listening ? '음성 듣는 중' : '말로 검색하기'} onClick={listen}><Mic aria-hidden="true" /><span>{listening ? '듣는 중…' : '말로 검색'}</span></button>}
-      </div>
+      <button className="search-button" type="submit"><Search aria-hidden="true" />답변 찾기</button>
     </form>
   )
 }

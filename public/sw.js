@@ -1,4 +1,4 @@
-const CACHE = 'sod-qa-v3-senior-mobile'
+const CACHE = 'sod-qa-v4-static-free'
 const CORE = ['./', './index.html', './data/qa.json', './data/symptom-index.json', './data/conversations.json', './manifest.webmanifest', './favicon.svg']
 self.addEventListener('install', (event) => event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE))))
 self.addEventListener('activate', (event) => event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))))
