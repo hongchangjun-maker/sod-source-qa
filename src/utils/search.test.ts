@@ -1,9 +1,11 @@
 import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import type { QAData } from '../types'
-import { FALLBACK_MESSAGE, isAmbiguous, searchQA, suggestions } from './search'
+import type { ConversationData, QAData } from '../types'
+import { FALLBACK_MESSAGE, isAmbiguous, searchConversations, searchQA, suggestions } from './search'
 
 const qa = JSON.parse(fs.readFileSync('public/data/qa.json', 'utf8')) as QAData
+const conversations = JSON.parse(fs.readFileSync('public/data/conversations.json', 'utf8')) as ConversationData
+const conversationSource = fs.readFileSync('source/KakaoTalk_20261009_0755_55_963_group.txt', 'utf8').replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
 
 describe('closed source-only search', () => {
   it('keeps the immutable data contract', () => {
@@ -51,5 +53,23 @@ describe('closed source-only search', () => {
     const values = suggestions(qa.items, '가')
     expect(values.length).toBeGreaterThan(0)
     expect(values.every((value) => keywordSet.has(value))).toBe(true)
+  })
+})
+
+describe('verbatim KakaoTalk conversation search', () => {
+  it('keeps every parsed message as an exact source substring', () => {
+    expect(conversations.metadata.textPolicy).toBe('verbatim')
+    expect(conversations.items).toHaveLength(716)
+    expect(conversations.items.every((item) => conversationSource.includes(item.text))).toBe(true)
+  })
+
+  it.each(['망막 색소 변성증', '자다가 깨서 계속 소변', '야간발한', '갑상선암', '물설사'])('finds exact conversation messages for “%s”', (query) => {
+    const results = searchConversations(conversations.items, query)
+    expect(results.length).toBeGreaterThan(0)
+    expect(results.every(({ item }) => conversationSource.includes(item.text))).toBe(true)
+  })
+
+  it('does not mix Kakao entry and exit notices into message bodies', () => {
+    expect(conversations.items.some((item) => /님이 (?:들어왔습니다|나갔습니다)\./.test(item.text))).toBe(false)
   })
 })

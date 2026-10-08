@@ -1,4 +1,4 @@
-import type { QAItem, SearchResult } from '../types'
+import type { ConversationItem, ConversationSearchResult, QAItem, SearchResult } from '../types'
 import { normalizeText, tokenize } from './normalizeKorean'
 
 export const FALLBACK_MESSAGE = '현재 등록된 명현반응(호전반응) 자료에서 해당 질문과 관련된 답변을 찾지 못했습니다. 다른 증상이나 키워드로 다시 검색해 주세요.'
@@ -78,5 +78,29 @@ export function suggestions(items: QAItem[], input: string, limit = 6) {
   return [...candidates]
     .filter((candidate) => normalizeText(candidate).includes(query) || fuzzyIncludes(normalizeText(candidate), query))
     .sort((a, b) => a.length - b.length || a.localeCompare(b, 'ko'))
+    .slice(0, limit)
+}
+
+export function searchConversations(items: ConversationItem[], query: string, limit = 30): ConversationSearchResult[] {
+  const normalizedQuery = normalizeText(query)
+  const terms = tokenize(query).filter((term) => term.length >= 2)
+  if (!normalizedQuery || isAmbiguous(query)) return []
+
+  return items.map((item) => {
+    const text = normalizeText(item.text)
+    const speaker = normalizeText(item.speaker)
+    const searchText = normalizeText(item.searchText)
+    let score = 0
+    const matchedTerms = new Set<string>()
+    if (text.includes(normalizedQuery)) score += 50
+    if (speaker.includes(normalizedQuery)) score += 35
+    for (const term of terms) {
+      if (text.includes(term)) { score += 14; matchedTerms.add(term) }
+      else if (searchText.includes(term)) { score += 6; matchedTerms.add(term) }
+    }
+    if (item.kind !== 'context') score += 3
+    return { item, score, matchedTerms: [...matchedTerms] }
+  }).filter((result) => result.score >= 10)
+    .sort((a, b) => b.score - a.score || a.item.id.localeCompare(b.item.id))
     .slice(0, limit)
 }
