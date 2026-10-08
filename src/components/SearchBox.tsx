@@ -59,14 +59,16 @@ export function SearchBox({ value, suggestions, onChange, onSearch }: Props) {
           aria-controls="suggestion-list"
         />
         {value && <button type="button" className="icon-button clear-button" aria-label="검색어 지우기" onClick={() => onChange('')}><X /></button>}
-        {SpeechRecognition && <button type="button" className={`icon-button mic-button ${listening ? 'listening' : ''}`} aria-label={listening ? '음성 듣는 중' : '음성으로 검색어 입력'} onClick={listen}><Mic /></button>}
         {open && suggestions.length > 0 && (
           <ul className="suggestions" id="suggestion-list" role="listbox">
             {suggestions.map((suggestion) => <li key={suggestion}><button type="button" onClick={() => { onChange(suggestion); onSearch(suggestion); setOpen(false) }}>{suggestion}</button></li>)}
           </ul>
         )}
       </div>
-      <button className="search-button" type="submit"><Search aria-hidden="true" />답변 찾기</button>
+      <div className="search-actions">
+        <button className="search-button" type="submit"><Search aria-hidden="true" />답변 찾기</button>
+        {SpeechRecognition && <button type="button" className={`voice-button ${listening ? 'listening' : ''}`} aria-label={listening ? '음성 듣는 중' : '말로 검색하기'} onClick={listen}><Mic aria-hidden="true" /><span>{listening ? '듣는 중…' : '말로 검색'}</span></button>}
+      </div>
     </form>
   )
 }

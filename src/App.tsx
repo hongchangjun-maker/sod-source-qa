@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BookOpenText, ChevronLeft, CircleAlert, HeartHandshake, Home, ListTree, MessageSquareText, Search, Trash2 } from 'lucide-react'
+import { BookOpenText, ChevronLeft, ChevronUp, CircleAlert, HeartHandshake, Home, ListTree, MessageSquareText, Search, Trash2 } from 'lucide-react'
 import { AnswerCard } from './components/AnswerCard'
 import { ConversationCard } from './components/ConversationCard'
 import { CategoryBrowser } from './components/CategoryBrowser'
@@ -8,8 +8,9 @@ import { SymptomIndex } from './components/SymptomIndex'
 import type { ConversationData, ConversationItem, ConversationSearchResult, QAData, QAItem, SearchResult, SymptomIndexItem } from './types'
 import { AMBIGUOUS_MESSAGE, FALLBACK_MESSAGE, isAmbiguous, searchConversations, searchQA, suggestions } from './utils/search'
 
-type View = 'search' | 'categories' | 'all' | 'index' | 'conversations' | 'consult'
+type View = 'search' | 'categories' | 'all' | 'conversations' | 'consult'
 const quickSymptoms = ['피부·가려움', '발진·두드러기', '두통', '어지럼', '울렁거림', '속쓰림', '변비', '설사', '졸림', '불면', '피로·무기력', '근육통', '관절통', '허리·어깨 통증', '기침·가래', '열·오한', '혈당', '혈압', '가슴 두근거림', '부종', '소변', '눈 침침함']
+const initialQuickCount = 8
 const broadChoices = ['피부', '소화', '두통·어지럼', '수면·피로', '근육·관절', '기침·가래', '혈당·혈압', '부종·소변']
 const consultItems = ['연령·성별', '현재 가장 불편한 증상 또는 질환', '과거 질환', '수술 이력', '현재 복용 중인 약', '함께 나타나는 여러 증상', 'SOD 제품 종류와 하루 섭취량', '섭취 기간과 최근 증량·감량 여부']
 const RECENTS_KEY = 'sod-qa-recents-v1'
@@ -28,6 +29,8 @@ export default function App() {
   const [results, setResults] = useState<SearchResult[] | null>(null)
   const [conversationResults, setConversationResults] = useState<ConversationSearchResult[]>([])
   const [conversationFilter, setConversationFilter] = useState<ConversationItem['kind'] | 'all'>('all')
+  const [conversationPage, setConversationPage] = useState(1)
+  const [showAllQuick, setShowAllQuick] = useState(false)
   const [ambiguous, setAmbiguous] = useState(false)
   const [view, setView] = useState<View>('search')
   const [recents, setRecents] = useState<string[]>(() => readStorage(RECENTS_KEY))
@@ -75,6 +78,8 @@ export default function App() {
 
   function goHome() { setView('search'); setResults(null); setConversationResults([]); setAmbiguous(false); setQuery(''); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const savedItems = data?.items.filter((item) => saved.includes(item.id)) ?? []
+  const filteredConversations = conversations?.items.filter((item) => conversationFilter === 'all' || item.kind === conversationFilter) ?? []
+  const visibleConversations = filteredConversations.slice(0, conversationPage * 20)
 
   useEffect(() => {
     if (!data || !document.modelContext?.registerTool) return
@@ -117,24 +122,23 @@ export default function App() {
         <section className="search-hero" aria-labelledby="page-title">
           <div className="eyebrow"><span />등록 자료에서만 찾아드립니다</div>
           <h1 id="page-title">명현반응<span>(호전반응)</span> Q&A</h1>
-          <p>증상이나 궁금한 내용을 입력해 보세요</p>
+          <p><strong>불편한 증상을 한두 단어로 입력하세요.</strong><br />예: 가려움, 설사, 부종, 잠이 안 와요</p>
           <SearchBox value={query} suggestions={autoSuggestions} onChange={setQuery} onSearch={runSearch} />
           <div className="privacy-note"><CircleAlert aria-hidden="true" /><span>입력 내용은 외부 서버로 전송하거나 저장하지 않습니다.</span></div>
           {recents.length > 0 && <div className="recent-row"><strong>최근 검색</strong><div>{recents.map((term) => <button type="button" key={term} onClick={() => runSearch(term)}>{term}</button>)}</div><button type="button" className="clear-recents" onClick={() => { setRecents([]); localStorage.removeItem(RECENTS_KEY) }}><Trash2 aria-hidden="true" />삭제</button></div>}
         </section>
 
         <nav className="view-nav" aria-label="자료 보기">
-          <button className={view === 'categories' ? 'active' : ''} onClick={() => setView('categories')}><ListTree aria-hidden="true" />증상별 보기</button>
-          <button className={view === 'index' ? 'active' : ''} onClick={() => setView('index')}><Search aria-hidden="true" />증상 빠른 찾기</button>
+          <button className={view === 'categories' ? 'active' : ''} onClick={() => setView('categories')}><ListTree aria-hidden="true" />증상별</button>
           <button className={view === 'all' ? 'active' : ''} onClick={() => setView('all')}><BookOpenText aria-hidden="true" />전체 질문</button>
           <button className={view === 'conversations' ? 'active' : ''} onClick={() => setView('conversations')}><MessageSquareText aria-hidden="true" />대화 원문</button>
-          <button className={view === 'consult' ? 'active' : ''} onClick={() => setView('consult')}><HeartHandshake aria-hidden="true" />상담 확인정보</button>
+          <button className={view === 'consult' ? 'active' : ''} onClick={() => setView('consult')}><HeartHandshake aria-hidden="true" />이용 안내</button>
         </nav>
 
         {loadError && <section className="status-panel error"><h2>자료를 불러오지 못했습니다</h2><p>페이지를 새로고침한 뒤 다시 시도해 주세요.</p></section>}
         {!data && !loadError && <section className="status-panel" aria-live="polite"><div className="loader" /><p>등록 자료를 불러오는 중입니다.</p></section>}
 
-        {data && view === 'search' && results === null && <section className="quick-section"><div className="section-heading"><div><span>빠르게 찾아보기</span><h2>자주 찾는 증상</h2></div><p>버튼을 누르면 바로 관련 원문을 찾습니다.</p></div><div className="quick-grid">{quickSymptoms.map((term) => <button type="button" key={term} onClick={() => runSearch(term)}>{term}</button>)}</div>{savedItems.length > 0 && <div className="saved-section"><h2>저장한 질문 <span>{savedItems.length}</span></h2>{savedItems.map((item) => <AnswerCard key={item.id} item={item} saved onToggleSave={toggleSaved} />)}</div>}</section>}
+        {data && view === 'search' && results === null && <section className="quick-section"><div className="how-to"><h2>이렇게 이용하세요</h2><ol><li><strong>1</strong><span>불편한 증상을<br />입력하거나 말하기</span></li><li><strong>2</strong><span>관련된 원문<br />답변 확인하기</span></li><li><strong>3</strong><span>필요한 질문은<br />저장해 다시 보기</span></li></ol></div><div className="section-heading"><div><span>한 번 눌러 검색</span><h2>자주 찾는 증상</h2></div><p>찾는 증상이 보이면 바로 눌러보세요.</p></div><div className="quick-grid">{quickSymptoms.slice(0, showAllQuick ? quickSymptoms.length : initialQuickCount).map((term) => <button type="button" key={term} onClick={() => runSearch(term)}>{term}</button>)}</div><button type="button" className="more-symptoms" onClick={() => setShowAllQuick((value) => !value)}>{showAllQuick ? '증상 버튼 접기' : `다른 증상 ${quickSymptoms.length - initialQuickCount}개 더 보기`}</button>{savedItems.length > 0 && <div className="saved-section"><h2>저장한 질문 <span>{savedItems.length}</span></h2>{savedItems.map((item) => <AnswerCard key={item.id} item={item} saved onToggleSave={toggleSaved} />)}</div>}</section>}
 
         {data && view === 'search' && results !== null && <section className="results-section" ref={resultsRef} tabIndex={-1} aria-live="polite">
           {ambiguous ? <div className="empty-state"><h2>{AMBIGUOUS_MESSAGE}</h2><p>가장 가까운 항목을 선택해 주세요.</p><div className="broad-choices">{broadChoices.map((choice) => <button type="button" key={choice} onClick={() => runSearch(choice)}>{choice}</button>)}</div></div>
@@ -143,12 +147,13 @@ export default function App() {
           <button type="button" className="restart-button" onClick={goHome}><ChevronLeft aria-hidden="true" />다른 증상 검색하기</button>
         </section>}
 
-        {data && view === 'categories' && <section className="content-section"><div className="section-heading"><div><span>분류별 탐색</span><h2>증상별 보기</h2></div><p>분류를 펼쳐 등록된 질문을 선택하세요.</p></div><CategoryBrowser items={data.items.filter((item) => item.part === '1부')} onOpen={showItem} /></section>}
+        {data && view === 'categories' && <section className="content-section"><div className="section-heading"><div><span>분류별 탐색</span><h2>증상별 보기</h2></div><p>증상 이름을 누르면 관련 원문을 바로 검색합니다.</p></div><SymptomIndex rows={symptomIndex} onSearch={runSearch} /><div className="category-browse-block"><h2>질문 분류 펼쳐보기</h2><CategoryBrowser items={data.items.filter((item) => item.part === '1부')} onOpen={showItem} /></div></section>}
         {data && view === 'all' && <section className="content-section"><div className="section-heading"><div><span>총 {data.items.length}개</span><h2>전체 질문 보기</h2></div><p>1부 체험사례와 2부 반응·대응 자료 전체입니다.</p></div><CategoryBrowser items={data.items} onOpen={showItem} /></section>}
-        {data && view === 'index' && <section className="content-section"><div className="section-heading"><div><span>원문 표 전체</span><h2>증상 빠른 찾기</h2></div><p>증상을 누르면 관련 원문 Q&A를 검색합니다.</p></div><SymptomIndex rows={symptomIndex} onSearch={runSearch} /></section>}
-        {data && conversations && view === 'conversations' && <section className="content-section"><div className="section-heading"><div><span>총 {conversations.metadata.totalMessages}개 메시지</span><h2>단체대화 원문</h2></div><p>화자·날짜·시각·본문을 내보낸 파일 그대로 표시합니다. 분류 표시는 탐색용이며 원문을 바꾸지 않습니다.</p></div><div className="conversation-filters" aria-label="대화 원문 분류"><button className={conversationFilter === 'all' ? 'active' : ''} onClick={() => setConversationFilter('all')}>전체 {conversations.metadata.totalMessages}</button><button className={conversationFilter === 'symptom-question' ? 'active' : ''} onClick={() => setConversationFilter('symptom-question')}>증상 문의 {conversations.metadata.counts['symptom-question']}</button><button className={conversationFilter === 'reaction' ? 'active' : ''} onClick={() => setConversationFilter('reaction')}>체험·반응 {conversations.metadata.counts.reaction}</button><button className={conversationFilter === 'answer' ? 'active' : ''} onClick={() => setConversationFilter('answer')}>답변·안내 {conversations.metadata.counts.answer}</button></div><div className="conversation-list">{conversations.items.filter((item) => conversationFilter === 'all' || item.kind === conversationFilter).map((item) => <ConversationCard key={item.id} item={item} />)}</div></section>}
-        {data && view === 'consult' && <section className="content-section consult-section"><div className="section-heading"><div><span>서버 저장 없음</span><h2>상담할 때 함께 확인하면 좋은 정보</h2></div><p>상담 전에 아래 내용을 따로 메모해 두면 좋습니다.</p></div><ol>{consultItems.map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, '0')}</span>{item}</li>)}</ol></section>}
+        {data && conversations && view === 'conversations' && <section className="content-section"><div className="section-heading"><div><span>총 {conversations.metadata.totalMessages}개 메시지</span><h2>단체대화 원문</h2></div><p>원문은 20개씩 표시합니다. 위 검색창에서 증상이나 사람 이름도 찾을 수 있습니다.</p></div><div className="conversation-filters" aria-label="대화 원문 분류"><button className={conversationFilter === 'all' ? 'active' : ''} onClick={() => { setConversationFilter('all'); setConversationPage(1) }}>전체 {conversations.metadata.totalMessages}</button><button className={conversationFilter === 'symptom-question' ? 'active' : ''} onClick={() => { setConversationFilter('symptom-question'); setConversationPage(1) }}>증상 문의 {conversations.metadata.counts['symptom-question']}</button><button className={conversationFilter === 'reaction' ? 'active' : ''} onClick={() => { setConversationFilter('reaction'); setConversationPage(1) }}>체험·반응 {conversations.metadata.counts.reaction}</button><button className={conversationFilter === 'answer' ? 'active' : ''} onClick={() => { setConversationFilter('answer'); setConversationPage(1) }}>답변·안내 {conversations.metadata.counts.answer}</button></div><p className="conversation-count" aria-live="polite">{filteredConversations.length}개 중 {visibleConversations.length}개 표시</p><div className="conversation-list">{visibleConversations.map((item) => <ConversationCard key={item.id} item={item} />)}</div>{visibleConversations.length < filteredConversations.length && <button type="button" className="load-more" onClick={() => setConversationPage((page) => page + 1)}>원문 20개 더 보기</button>}</section>}
+        {data && view === 'consult' && <section className="content-section consult-section"><div className="safety-panel"><CircleAlert aria-hidden="true" /><div><strong>이 앱의 자료는 진료나 진단을 대신하지 않습니다.</strong><p>갑자기 심해진 증상이나 위급한 상황은 앱의 답변만 기다리지 말고 의료기관 또는 119에 도움을 요청하세요.</p></div></div><div className="section-heading"><div><span>입력 내용 서버 저장 없음</span><h2>상담 전에 확인할 정보</h2></div><p>아래 내용을 종이에 메모해 두면 상담할 때 편리합니다.</p></div><ol>{consultItems.map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, '0')}</span>{item}</li>)}</ol><div className="source-policy-box"><h2>원문 이용 원칙</h2><p>검색 결과의 답변과 대화 본문은 등록된 원문 그대로 표시합니다. 이 앱이 새로운 건강 답변을 만들거나 원문 내용을 고쳐 쓰지 않습니다.</p></div></section>}
       </main>
+
+      <button type="button" className="to-top" aria-label="화면 맨 위로 이동" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ChevronUp aria-hidden="true" /><span>맨 위로</span></button>
 
       <footer>
         <div className="footer-inner"><div><strong>자료 이용 안내</strong><p>이 서비스는 등록된 명현반응(호전반응) 체험담 및 상담 자료를 쉽게 검색하기 위한 서비스입니다. 화면의 답변은 등록된 자료의 내용을 기반으로 표시됩니다.</p></div>{data && <aside><strong>원문 주의사항</strong><p>{data.metadata.sourceNotice}</p></aside>}</div>
