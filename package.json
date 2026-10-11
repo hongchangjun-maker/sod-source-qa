@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run build:data && npm run validate:data && npm run validate:no-ai && tsc -b && vite build",
-    "build:data": "node scripts/build-conversation-data.mjs",
+    "build:data": "node scripts/build-data.mjs && node scripts/build-conversation-data.mjs",
     "preview": "vite preview",
     "test": "npm run validate:no-ai && vitest run",
     "typecheck": "tsc -b --pretty false",

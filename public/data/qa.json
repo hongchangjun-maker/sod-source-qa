@@ -5,7 +5,9 @@
     "totalItems": 77,
     "originalItemCount": 77,
     "source": "명현반응_호전반응_QA_재편집본.txt",
+    "sourceSha256": "c15b8aa0898cf0d2a9d94b1b210891dc3cef0e816e271c9929be6a4aae511f58",
     "answerPolicy": "source-only",
+    "textPolicy": "verbatim-source-excerpt",
     "sourceNotice": "※ 본 문서는 업로드된 카카오톡 대화의 **체험담·상담·해석을 정리한 편집본**이며, 개별 증상에 대한 의료 진단서나 치료 지침이 아닙니다."
   },
   "items": [

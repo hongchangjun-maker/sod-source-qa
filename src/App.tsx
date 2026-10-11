@@ -44,7 +44,7 @@ export default function App() {
       fetch(`${import.meta.env.BASE_URL}data/symptom-index.json`).then((response) => { if (!response.ok) throw new Error('index'); return response.json() as Promise<SymptomIndexItem[]> }),
       fetch(`${import.meta.env.BASE_URL}data/conversations.json`).then((response) => { if (!response.ok) throw new Error('conversations'); return response.json() as Promise<ConversationData> }),
     ]).then(([qa, index, conversationData]) => {
-      if (qa.metadata.answerPolicy !== 'source-only' || qa.metadata.originalItemCount !== 77 || qa.items.length !== qa.metadata.totalItems || qa.items.length < qa.metadata.originalItemCount) throw new Error('invalid')
+      if (qa.metadata.answerPolicy !== 'source-only' || qa.metadata.textPolicy !== 'verbatim-source-excerpt' || qa.metadata.sourceSha256.length !== 64 || qa.metadata.originalItemCount !== 77 || qa.items.length !== qa.metadata.totalItems || qa.items.length < qa.metadata.originalItemCount) throw new Error('invalid')
       if (conversationData.metadata.textPolicy !== 'verbatim' || conversationData.items.length !== conversationData.metadata.totalMessages) throw new Error('invalid-conversations')
       setData(qa); setSymptomIndex(index); setConversations(conversationData)
     }).catch(() => setLoadError(true))
@@ -136,7 +136,7 @@ export default function App() {
       <footer>
         <div className="footer-inner"><div><strong>자료 이용 안내</strong><p>이 서비스는 등록된 명현반응(호전반응) 체험담 및 상담 자료를 쉽게 검색하기 위한 서비스입니다. 화면의 답변은 등록된 자료의 내용을 기반으로 표시됩니다.</p></div>{data && <aside><strong>원문 주의사항</strong><p>{data.metadata.sourceNotice}</p></aside>}</div>
       </footer>
-      <div className="source-ribbon">답변과 대화 본문은 등록된 원문 그대로 표시되며 새로운 건강 답변을 생성하지 않습니다.</div>
+      <div className="source-ribbon">모든 답변과 대화 본문은 첨부 자료에서 그대로 옮긴 원문이며 새 답변을 만들지 않습니다.</div>
     </div>
   )
 }

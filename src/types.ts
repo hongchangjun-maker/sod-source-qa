@@ -15,7 +15,9 @@ export interface QAData {
     totalItems: number
     originalItemCount: number
     source: string
+    sourceSha256: string
     answerPolicy: 'source-only'
+    textPolicy: 'verbatim-source-excerpt'
     sourceNotice: string
   }
   items: QAItem[]

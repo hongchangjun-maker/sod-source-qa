@@ -12,7 +12,7 @@ export function AnswerCard({ item, score, saved, onToggleSave }: Props) {
         {score !== undefined && <span className="relevance">{relevanceLabel(score)}</span>}
       </div>
       <h3><span aria-hidden="true">Q.</span> {item.question}</h3>
-      <div className="source-answer"><span className="answer-label" aria-hidden="true">A.</span><p>{item.answer}</p></div>
+      <div className="source-answer"><span className="answer-label" aria-hidden="true">A.</span><div><span className="verbatim-label">첨부 자료의 답변 원문</span><p>{item.answer}</p></div></div>
       <div className="card-actions">
         <span className="source-id">{item.part} · {item.id}</span>
         <button type="button" className="save-button" aria-pressed={saved} onClick={() => onToggleSave(item.id)}>

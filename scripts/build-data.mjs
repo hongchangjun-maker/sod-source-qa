@@ -1,8 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import crypto from 'node:crypto'
 
 const sourcePath = process.argv[2] ?? path.resolve('source/명현반응_호전반응_QA_재편집본.txt')
-const raw = fs.readFileSync(sourcePath, 'utf8').replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
+const sourceBuffer = fs.readFileSync(sourcePath)
+const raw = sourceBuffer.toString('utf8').replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
 const lines = raw.split('\n')
 
 const concepts = [
@@ -84,7 +86,9 @@ const qa = {
     totalItems: items.length,
     originalItemCount: 77,
     source: path.basename(sourcePath),
+    sourceSha256: crypto.createHash('sha256').update(sourceBuffer).digest('hex'),
     answerPolicy: 'source-only',
+    textPolicy: 'verbatim-source-excerpt',
     sourceNotice,
   },
   items,

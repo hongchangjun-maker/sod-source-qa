@@ -5,11 +5,14 @@ import { FALLBACK_MESSAGE, isAmbiguous, searchConversations, searchQA, suggestio
 
 const qa = JSON.parse(fs.readFileSync('public/data/qa.json', 'utf8')) as QAData
 const conversations = JSON.parse(fs.readFileSync('public/data/conversations.json', 'utf8')) as ConversationData
+const qaSource = fs.readFileSync('source/명현반응_호전반응_QA_재편집본.txt', 'utf8').replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
+const qaDisplaySource = qaSource.split('\n').map((line) => line.trimEnd().replace(/^\*\*A\.\*\*\s?/, '')).join('\n')
 const conversationSource = fs.readFileSync('source/KakaoTalk_20261009_0755_55_963_group.txt', 'utf8').replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
 
 describe('closed source-only search', () => {
   it('keeps the immutable data contract', () => {
     expect(qa.metadata.answerPolicy).toBe('source-only')
+    expect(qa.metadata.textPolicy).toBe('verbatim-source-excerpt')
     expect(qa.metadata.originalItemCount).toBe(77)
     expect(qa.metadata.totalItems).toBe(qa.items.length)
     expect(qa.items.length).toBeGreaterThanOrEqual(77)
@@ -17,6 +20,8 @@ describe('closed source-only search', () => {
     expect(qa.items.filter((item) => item.part === '2부').length).toBeGreaterThanOrEqual(32)
     expect(new Set(qa.items.map((item) => item.id)).size).toBe(qa.items.length)
     expect(qa.items.every((item) => item.question.length > 0 && item.answer.length > 0)).toBe(true)
+    expect(qa.items.every((item) => qaSource.includes(item.question))).toBe(true)
+    expect(qa.items.every((item) => qaDisplaySource.includes(item.answer))).toBe(true)
   })
 
   const expectedSearches: Array<[string, RegExp]> = [

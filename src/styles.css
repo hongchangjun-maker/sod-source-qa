@@ -98,6 +98,7 @@ h1 span { font-weight: 400; color: #cce8e1; }
 .answer-card h3 span, .answer-label { color: var(--brand); font-family: Georgia, serif; font-size: 1.35rem; }
 .source-answer { display: grid; grid-template-columns: auto 1fr; gap: .7rem; padding: 1.15rem; border-radius: 10px; background: #f2f7f5; }
 .source-answer p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #263e3a; font-size: 1rem; line-height: 1.78; }
+.verbatim-label { display: inline-block; margin-bottom: .45rem; color: var(--brand); font-size: .8rem; font-weight: 800; }
 .card-actions { margin-top: 1rem; }
 .source-id { color: #70817e; font-size: .76rem; }
 .save-button { min-height: 44px; display: flex; align-items: center; gap: .35rem; padding: 0 .8rem; border: 1px solid var(--line); border-radius: 9px; color: var(--brand); background: white; font-weight: 700; }
